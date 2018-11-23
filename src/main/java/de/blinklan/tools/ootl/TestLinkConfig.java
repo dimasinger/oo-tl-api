@@ -3,7 +3,7 @@ package de.blinklan.tools.ootl;
 /**
  * Structure holding permissions for actions in TestLink
  * 
- * @author dvo
+ * @author dimasinger
  *
  */
 public class TestLinkConfig {

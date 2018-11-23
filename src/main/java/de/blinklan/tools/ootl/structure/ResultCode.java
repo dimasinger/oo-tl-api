@@ -4,7 +4,7 @@ import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
 
 /**
  * Enum representing the status of a test execution
- * @author dvo
+ * @author dimasinger
  *
  */
 public enum ResultCode {

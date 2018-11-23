@@ -26,7 +26,7 @@ import de.blinklan.tools.ootl.exception.ForcedExitException;
  * using the API more intuitive and less error-prone. It improves performance by caching almost everything, which is
  * crucial for large operations such as copying hundreds of test cases.
  * 
- * @author dvo
+ * @author dimasinger
  * 
  */
 public class TestLink {

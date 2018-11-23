@@ -11,7 +11,7 @@ import br.eti.kinoshita.testlinkjavaapi.util.TestLinkAPIException;
 /**
  * Wraps a Build, the TestPlan it belongs to and related API calls
  * 
- * @author dvo
+ * @author dimasinger
  * 
  */
 public class TLBuild {

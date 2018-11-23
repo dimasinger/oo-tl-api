@@ -7,7 +7,7 @@ import br.eti.kinoshita.testlinkjavaapi.model.Execution;
 /**
  * Wraps the execution result of a TLTestCase in a TLBuild
  * 
- * @author dvo
+ * @author dimasinger
  *
  */
 public class TLExecution {

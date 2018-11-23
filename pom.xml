@@ -8,6 +8,7 @@
 	<packaging>jar</packaging>
 
 	<name>Object-Oriented TestLink API</name>
+	<url>http://tools.blinklan.de</url>
 	<inceptionYear>2018</inceptionYear>
 
 	<licenses>
@@ -17,6 +18,18 @@
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
+	
+	<scm>
+        <connection>scm:git:git@github.com:kinow/testlink-java-api.git</connection>
+        <developerConnection>scm:git:git@github.com:kinow/testlink-java-api.git</developerConnection>
+        <url>https://github.com/dimasinger/oo-tl-api/issues</url>
+        <tag>HEAD</tag>
+    </scm>
+	
+	<issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/dimasinger/oo-tl-api/issues</url>
+    </issueManagement>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -51,5 +64,4 @@
 			</plugin>
 		</plugins>
 	</build>
-	<url>http://tools.blinklan.de</url>
 </project>

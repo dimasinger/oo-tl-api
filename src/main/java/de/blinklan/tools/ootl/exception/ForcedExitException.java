@@ -4,7 +4,7 @@ package de.blinklan.tools.ootl.exception;
 /**
  * Exception used to gracefully exit the tool when a fatal error occurs
  * 
- * @author dvo
+ * @author dimasinger
  *
  */
 public final class ForcedExitException extends RuntimeException {

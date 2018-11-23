@@ -19,7 +19,7 @@ import br.eti.kinoshita.testlinkjavaapi.util.TestLinkAPIException;
 /**
  * Wraps a TestProject and related API calls
  * 
- * @author dvo
+ * @author dimasinger
  *
  */
 public class TLTestProject {
