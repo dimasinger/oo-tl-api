@@ -18,18 +18,18 @@
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
-	
+
 	<scm>
-        <connection>scm:git:git@github.com:kinow/testlink-java-api.git</connection>
-        <developerConnection>scm:git:git@github.com:kinow/testlink-java-api.git</developerConnection>
-        <url>https://github.com/dimasinger/oo-tl-api/issues</url>
-        <tag>HEAD</tag>
-    </scm>
-	
+		<connection>scm:git:git@github.com:kinow/testlink-java-api.git</connection>
+		<developerConnection>scm:git:git@github.com:kinow/testlink-java-api.git</developerConnection>
+		<url>https://github.com/dimasinger/oo-tl-api/issues</url>
+		<tag>HEAD</tag>
+	</scm>
+
 	<issueManagement>
-        <system>GitHub</system>
-        <url>https://github.com/dimasinger/oo-tl-api/issues</url>
-    </issueManagement>
+		<system>GitHub</system>
+		<url>https://github.com/dimasinger/oo-tl-api/issues</url>
+	</issueManagement>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -37,17 +37,17 @@
 
 	<dependencies>
 		<dependency>
-            <groupId>br.eti.kinoshita</groupId>
-            <artifactId>testlink-java-api</artifactId>
-            <version>1.9.16-1</version>
-        </dependency>
-	
+			<groupId>br.eti.kinoshita</groupId>
+			<artifactId>testlink-java-api</artifactId>
+			<version>1.9.16-1</version>
+		</dependency>
+
 		<dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>2.11.1</version>
-        </dependency>
-	
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
+			<version>2.11.1</version>
+		</dependency>
+
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-engine</artifactId>
@@ -55,9 +55,19 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-	
+
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.8.0</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+
 			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.22.0</version>

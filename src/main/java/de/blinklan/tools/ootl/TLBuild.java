@@ -1,5 +1,7 @@
 package de.blinklan.tools.ootl;
 
+import java.util.Optional;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -15,93 +17,95 @@ import br.eti.kinoshita.testlinkjavaapi.util.TestLinkAPIException;
  * 
  */
 public class TLBuild {
-    
-    private static final Logger log = LogManager.getLogger(TLBuild.class);
 
-    final TestLink tl;
+	private static final Logger log = LogManager.getLogger(TLBuild.class);
 
-    final TLTestProject project;
+	final TestLink tl;
 
-    final int planID;
-    final String planName;
+	final TLTestProject project;
 
-    final int buildID;
-    final String buildName;
+	final int planID;
+	final String planName;
 
-    TLBuild(TestLink tl, TLTestProject project, TestPlan plan, Build build) {
-        this.tl = tl;
-        this.project = project;
-        this.planID = plan.getId();
-        this.planName = plan.getName();
-        this.buildID = build.getId();
-        this.buildName = build.getName();
-    }
+	final int buildID;
+	final String buildName;
 
-    /*
-     * Getters
-     */
+	TLBuild(TestLink tl, TLTestProject project, TestPlan plan, Build build) {
+		this.tl = tl;
+		this.project = project;
+		this.planID = plan.getId();
+		this.planName = plan.getName();
+		this.buildID = build.getId();
+		this.buildName = build.getName();
+	}
 
-    public String getPlanName() {
-        return planName;
-    }
+	/*
+	 * Getters
+	 */
 
-    public String getBuildName() {
-        return buildName;
-    }
+	public String getPlanName() {
+		return planName;
+	}
 
-    /*
-     * API calls
-     */
+	public String getBuildName() {
+		return buildName;
+	}
 
-    /**
-     * Retrieves the latest execution result of a test case in this build
-     * 
-     * @return the execution result, or null if not executed in this build
-     */
-    public TLExecution getLastExecution(TLTestCase testcase) {
-        try {
-            Execution execution = tl.api.getLastExecutionResult(planID, testcase.getID(), -1);
-            if (execution == null) {
-                log.debug("Test case '" + testcase.getName() + "' not executed in test plan '" + planName + "'");
-                return new TLExecution(tl, this, testcase, null);
-            }
-            if (execution.getBuildId() != buildID) {
-                log.debug("Test case '" + testcase.getName() + "' not executed in build '" + buildName + "'");
-                return new TLExecution(tl, this, testcase, null);
-            }
-            return new TLExecution(tl, this, testcase, execution);
-        } catch (TestLinkAPIException e) {
-            log.error("Failed to retrieve last execution result of test case '" + testcase.getName() + "' in test plan '"
-                    + planName + "':", e);
-        }
-        return null;
-    }
+	/*
+	 * API calls
+	 */
 
-    /**
-     * Adds a test case to this test plan
-     * 
-     * @param testcase
-     *        the test case to add
-     * @return -1 on error; 0 on success; version number (>0) if test case already in test plan
-     */
-    public int addTestcaseToTestPlan(TLTestCase testcase) {
-        try {
-            tl.api.addTestCaseToTestPlan(project.getID(), planID, testcase.getID(), testcase.getVersion(), -1, 0, 0);
-            return 0;
-        } catch (TestLinkAPIException e) {
-            /*
-             * API function getTestCasesForTestPlan is broken and unusable.
-             * Workaround: Just try to add the test case to the test plan 
-             * and parse the exception thrown if test case is already added.
-             */
-            String message = e.getMessage();
-            if (!message.matches(".*Test Case version number.*requested version.*is already linked to Test Plan.*")) {
-                log.error("Failed to add test case '" + testcase.getName() + "' to test plan '" + planName + "':", e);
-                return -1;
-            }
-            String version = message.replaceAll(".*version number ", "").replaceAll(" <> \\d+ \\(requested version\\).*", "");
-            log.debug("Test case '" + testcase.getName() + "' already in test plan '" + planName + "'");
-            return Integer.parseInt(version);
-        }
-    }
+	/**
+	 * Retrieves the latest execution result of a test case in this build
+	 * 
+	 * @return Execution result if testcase executed in this build
+	 */
+	public Optional<TLExecution> getLastExecution(TLTestCase testcase) {
+		try {
+			Execution execution = tl.api.getLastExecutionResult(planID, testcase.getID(), -1);
+			if(execution == null) {
+				log.debug("Test case '" + testcase.getName() + "' not executed in test plan '" + planName + "'");
+				return Optional.of(new TLExecution(tl, this, testcase, null));
+			}
+			if(execution.getBuildId() != buildID) {
+				log.debug("Test case '" + testcase.getName() + "' not executed in build '" + buildName + "'");
+				return Optional.of(new TLExecution(tl, this, testcase, null));
+			}
+			return Optional.of(new TLExecution(tl, this, testcase, execution));
+		} catch(TestLinkAPIException e) {
+			log.error("Failed to retrieve last execution result of test case '" + testcase.getName()
+					+ "' in test plan '" + planName + "':", e);
+		}
+		return Optional.empty();
+	}
+
+	/**
+	 * Adds a test case to this test plan
+	 * 
+	 * @param testcase
+	 *            the test case to add
+	 * @return -1 on error; 0 on success; version number (>0) if test case already
+	 *         in test plan
+	 */
+	public int addTestcaseToTestPlan(TLTestCase testcase) {
+		try {
+			tl.api.addTestCaseToTestPlan(project.getID(), planID, testcase.getID(), testcase.getVersion(), -1, 0, 0);
+			return 0;
+		} catch(TestLinkAPIException e) {
+			/*
+			 * API function getTestCasesForTestPlan is broken and unusable. Workaround: Just
+			 * try to add the test case to the test plan and parse the exception thrown if
+			 * test case is already added.
+			 */
+			String message = e.getMessage();
+			if(!message.matches(".*Test Case version number.*requested version.*is already linked to Test Plan.*")) {
+				log.error("Failed to add test case '" + testcase.getName() + "' to test plan '" + planName + "':", e);
+				return -1;
+			}
+			String version = message.replaceAll(".*version number ", "")
+					.replaceAll(" <> \\d+ \\(requested version\\).*", "");
+			log.debug("Test case '" + testcase.getName() + "' already in test plan '" + planName + "'");
+			return Integer.parseInt(version);
+		}
+	}
 }
