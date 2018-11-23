@@ -2,11 +2,8 @@ package de.blinklan.tools.ootl;
 
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import de.blinklan.tools.ootl.structure.ResultCode;
-import de.blinklan.tools.ootl.structure.TLTestStep;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import br.eti.kinoshita.testlinkjavaapi.constants.ActionOnDuplicate;
 import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
@@ -16,10 +13,12 @@ import br.eti.kinoshita.testlinkjavaapi.constants.TestImportance;
 import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
 import br.eti.kinoshita.testlinkjavaapi.model.TestCaseStep;
 import br.eti.kinoshita.testlinkjavaapi.util.TestLinkAPIException;
+import de.blinklan.tools.ootl.structure.ResultCode;
+import de.blinklan.tools.ootl.structure.TLTestStep;
 
 public class TLTestCase {
 
-    private static final Logger log = LogManager.getLogger(TLTestCase.class);
+	private static final Log log = LogFactory.getLog(TLTestCase.class);
     
     final TestLink tl;
 

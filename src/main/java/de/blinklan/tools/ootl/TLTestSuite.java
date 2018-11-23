@@ -5,10 +5,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import de.blinklan.tools.ootl.structure.TLTestStep;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import br.eti.kinoshita.testlinkjavaapi.constants.ActionOnDuplicate;
 import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionType;
@@ -19,6 +17,7 @@ import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
 import br.eti.kinoshita.testlinkjavaapi.model.TestCaseStep;
 import br.eti.kinoshita.testlinkjavaapi.model.TestSuite;
 import br.eti.kinoshita.testlinkjavaapi.util.TestLinkAPIException;
+import de.blinklan.tools.ootl.structure.TLTestStep;
 
 /**
  * Wraps a TestSuite and related API calls
@@ -28,7 +27,7 @@ import br.eti.kinoshita.testlinkjavaapi.util.TestLinkAPIException;
  */
 public class TLTestSuite {
 
-    private static final Logger log = LogManager.getLogger(TLTestSuite.class);
+	private static final Log log = LogFactory.getLog(TLTestSuite.class);
 
     final TestLink tl;
 

@@ -2,8 +2,8 @@ package de.blinklan.tools.ootl;
 
 import java.util.Optional;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import br.eti.kinoshita.testlinkjavaapi.model.Build;
 import br.eti.kinoshita.testlinkjavaapi.model.Execution;
@@ -18,7 +18,7 @@ import br.eti.kinoshita.testlinkjavaapi.util.TestLinkAPIException;
  */
 public class TLBuild {
 
-	private static final Logger log = LogManager.getLogger(TLBuild.class);
+	private static final Log log = LogFactory.getLog(TLBuild.class);
 
 	final TestLink tl;
 

@@ -8,8 +8,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import br.eti.kinoshita.testlinkjavaapi.TestLinkAPI;
 import br.eti.kinoshita.testlinkjavaapi.model.TestProject;
@@ -31,7 +31,7 @@ import de.blinklan.tools.ootl.exception.ForcedExitException;
  */
 public class TestLink {
 
-    private static final Logger log = LogManager.getLogger(TestLink.class);
+    private static final Log log = LogFactory.getLog(TestLink.class);
     
     String username;
 

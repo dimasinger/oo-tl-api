@@ -10,17 +10,6 @@ import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
 public enum ResultCode {
     NOT_RUN, SUCCESS, SKIPPED, FAILURE;
     
-    public static ResultCode byStatusCode(int status) {
-        switch (status) {
-        case 0:
-            return SKIPPED;
-        case 1:
-            return SUCCESS;
-        default:
-            return FAILURE;
-        }
-    }
-    
     public static ResultCode fromExecutionStatus(ExecutionStatus status) {
         switch(status) {
         case PASSED:
