@@ -6,8 +6,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
 import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionType;
@@ -15,7 +15,7 @@ import br.eti.kinoshita.testlinkjavaapi.model.TestCaseStep;
 
 public class TLTestStep {
 
-    private static final Logger log = LogManager.getLogger(TLTestStep.class);
+	private static final Log log = LogFactory.getLog(TLTestStep.class);
     
     private List<TLTestStep> steps;
     private TLTestStep parent;
@@ -52,10 +52,6 @@ public class TLTestStep {
 
     public TLTestStep getStep(int i) {
         return steps.get(i);
-    }
-
-    public TLTestStep lastStep() {
-        return steps.get(steps.size() - 1);
     }
 
     public TLTestStep getParent() {
@@ -99,19 +95,6 @@ public class TLTestStep {
     public TLTestStep setDuration(Duration duration) {
         this.duration = duration;
         return this;
-    }
-
-    public String formatDuration() {
-        if (duration.getSeconds() == 0)
-            return duration.toMillis() + "ms";
-        long h = duration.toHours();
-        long m = duration.toMinutes() - 60 * h;
-        long s = duration.getSeconds() - 60 * (60 * h + m);
-        // round seconds
-        if (duration.getNano() > 0.5e9) {
-            ++s;
-        }
-        return (h == 0 ? "" : h + "h ") + (h == 0 && m == 0 ? "" : m + "m ") + s + "s";
     }
 
     public Date getExecutionTime() {
@@ -175,7 +158,7 @@ public class TLTestStep {
         List<TestCaseStep> testCaseSteps = new ArrayList<>();
         int i = 0;
         for (TLTestStep step : getSteps()) {
-            testCaseSteps.add(new TestCaseStep(i, version, i + 1, step.getName() + step.getCountString(" (x", ")"), "", true,
+            testCaseSteps.add(new TestCaseStep(i, version, i + 1, step.getName() + step.getFormattedCount(" (x", ")"), "", true,
                     ExecutionType.AUTOMATED));
             ++i;
         }
@@ -205,14 +188,27 @@ public class TLTestStep {
         return hash;
     }
 
-    public String getCountString(String pre, String post) {
+    public String getFormattedCount(String pre, String post) {
         return count == 1 ? "" : pre + count + post;
+    }
+    
+    public String getFormattedDuration() {
+        if (duration.getSeconds() == 0)
+            return duration.toMillis() + "ms";
+        long h = duration.toHours();
+        long m = duration.toMinutes() - 60 * h;
+        long s = duration.getSeconds() - 60 * (60 * h + m);
+        // round seconds
+        if (duration.getNano() > 0.5e9) {
+            ++s;
+        }
+        return (h == 0 ? "" : h + "h ") + (h == 0 && m == 0 ? "" : m + "m ") + s + "s";
     }
 
     @Override
 	public String toString() {
-        return getClass().getSimpleName() + " [" + getResult() + "]" + ": " + getName() + getCountString(" (x", ")") + ", "
-                + formatDuration();
+        return getClass().getSimpleName() + " [" + getResult() + "]" + ": " + getName() + getFormattedCount(" (x", ")") + ", "
+                + getFormattedDuration();
     }
 
     private void dump(String pre) {
