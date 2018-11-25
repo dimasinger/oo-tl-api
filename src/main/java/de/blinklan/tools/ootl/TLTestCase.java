@@ -134,13 +134,14 @@ public class TLTestCase {
         int v = build.addTestcaseToTestPlan(this);
         if (v == -1)
             return false;
+        String finalNotes = notes;
         if (v > 0 && v != getVersion()) {
             log.debug("Executing version " + v + ", adding comment with version " + getVersion() + " to execution notes");
-            notes += "\n\nActual executed version: " + getVersion() + "\nGo to Test Specification to see changes";
+            finalNotes += "\n\nActual executed version: " + getVersion() + "\nGo to Test Specification to see changes";
         }
 
         try {
-            tl.api.setTestCaseExecutionResult(testcaseID, -1, build.planID, status, build.buildID, "", notes.trim(), false, "", -1,
+            tl.api.setTestCaseExecutionResult(testcaseID, -1, build.planID, status, build.buildID, "", finalNotes.trim(), false, "", -1,
                     "", null, true);
             return true;
         } catch (TestLinkAPIException e) {

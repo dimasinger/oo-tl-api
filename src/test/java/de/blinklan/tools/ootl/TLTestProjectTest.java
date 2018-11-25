@@ -35,12 +35,12 @@ class TLTestProjectTest {
 		TLTestSuite parent = project.getFirstLevelTestSuite("Parent").orElseThrow(EmptyOptionalError::new);
 		assertThat(parent.getName()).isEqualTo("Parent");
 		assertThat(parent.getID()).isEqualTo(2);
-		assertThat(parent.getParent()).isNull();
+		assertThat(parent.getParent()).isEmpty();
 		
-		TLTestSuite child = parent.getTestSuite("Child 2");
+		TLTestSuite child = parent.getTestSuite("Child 2").orElseThrow(EmptyOptionalError::new);
 		assertThat(child.getName()).isEqualTo("Child 2");
 		assertThat(child.getID()).isEqualTo(4);
-		assertThat(child.getParent()).isSameAs(parent);
+		assertThat(child.getParent().orElseThrow(EmptyOptionalError::new)).isSameAs(parent);
 	}
 	
 	@Test
@@ -54,12 +54,12 @@ class TLTestProjectTest {
 		TLTestSuite firstLevel = project.getTestSuiteByPath("A").orElseThrow(EmptyOptionalError::new);
 		assertThat(firstLevel.getName()).isEqualTo("A");
 		assertThat(firstLevel.getID()).isEqualTo(1);
-		assertThat(firstLevel.getParent()).isNull();
+		assertThat(firstLevel.getParent()).isEmpty();
 		
 		TLTestSuite deep = project.getTestSuiteByPath("C/Child 1/Superchild/Test").orElseThrow(EmptyOptionalError::new);
 		assertThat(deep.getName()).isEqualTo("Test");
 		assertThat(deep.getID()).isEqualTo(17);
-		assertThat(deep.getParent().getName()).isEqualTo("Superchild");
+		assertThat(deep.getParent().orElseThrow(EmptyOptionalError::new).getName()).isEqualTo("Superchild");
 	}
 
 	@Test

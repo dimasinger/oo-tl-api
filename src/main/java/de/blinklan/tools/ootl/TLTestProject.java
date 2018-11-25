@@ -16,6 +16,7 @@ import br.eti.kinoshita.testlinkjavaapi.model.TestPlan;
 import br.eti.kinoshita.testlinkjavaapi.model.TestProject;
 import br.eti.kinoshita.testlinkjavaapi.model.TestSuite;
 import br.eti.kinoshita.testlinkjavaapi.util.TestLinkAPIException;
+import de.blinklan.tools.ootl.exception.NoSuchTestSuiteException;
 
 /**
  * Wraps a TestProject and related API calls
@@ -52,13 +53,11 @@ public class TLTestProject {
 			return null;
 		}
 		TLTestSuite current = getFirstLevelTestSuite(testSuitePath.get(0)).orElseThrow(
-				() -> new RuntimeException("No such top level test suite: " + testSuitePath.get(0)));
+				() -> new NoSuchTestSuiteException("No such top level test suite: " + testSuitePath.get(0)));
 		for(int i = 1; i < testSuitePath.size(); ++i) {
-			current = current.getOrCreateTestSuite(testSuitePath.get(i));
-			if(current == null) {
-				log.error("Failed to resolve test suite path " + logPath + "!");
-				return null;
-			}
+			String suiteName = testSuitePath.get(i);
+			current = current.getOrCreateTestSuite(suiteName)
+					.orElseThrow(() -> new NoSuchTestSuiteException("No such  test suite: " + suiteName));
 		}
 		return current;
 	}

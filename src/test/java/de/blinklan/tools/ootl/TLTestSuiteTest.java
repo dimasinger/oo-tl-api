@@ -42,7 +42,7 @@ public class TLTestSuiteTest {
 	void testGetTestCaseBasic() {
 		TLTestSuite suite = initTestSuiteWithTestCases("basic");
 
-		TLTestCase testcase = suite.getTestCase("Test Case");
+		TLTestCase testcase = suite.getTestCase("Test Case").orElseThrow(EmptyOptionalError::new);
 		assertThat(testcase.getName()).isEqualTo("Test Case");
 		assertThat(testcase.getID()).isEqualTo(1);
 		assertThat(testcase.getParent()).isSameAs(suite);

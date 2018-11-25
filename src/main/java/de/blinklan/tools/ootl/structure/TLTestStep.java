@@ -213,9 +213,9 @@ public class TLTestStep {
 
     private void dump(String pre) {
         log.debug(pre + toString());
-        pre += "  ";
+        String newPre = pre + "  ";
         for (TLTestStep step : steps) {
-            step.dump(pre);
+            step.dump(newPre);
         }
     }
 
