@@ -20,16 +20,16 @@ public class TLTestCase {
 
 	private static final Log log = LogFactory.getLog(TLTestCase.class);
     
-    final TestLink tl;
+	protected final TestLink tl;
 
-    final TLTestProject project;
-    final TLTestSuite parent;
+	protected final TLTestProject project;
+	protected final TLTestSuite parent;
 
-    final TestCase testcase;
-    final int testcaseID;
-    final String testcaseName;
+	protected final TestCase testcase;
+	protected final int testcaseID;
+	protected final String testcaseName;
 
-    TLTestCase(TestLink tl, TLTestProject project, TLTestSuite parent, TestCase testcase) {
+	protected TLTestCase(TestLink tl, TLTestProject project, TLTestSuite parent, TestCase testcase) {
         this.tl = tl;
         this.project = project;
         this.parent = parent;

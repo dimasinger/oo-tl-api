@@ -29,20 +29,20 @@ public class TLTestSuite {
 
 	private static final Log log = LogFactory.getLog(TLTestSuite.class);
 
-    final TestLink tl;
+	protected final TestLink tl;
 
-    final TLTestProject project;
-    final TLTestSuite parent;
+	protected final TLTestProject project;
+	protected final TLTestSuite parent;
 
-    final TestSuite suite;
-    final int suiteID;
-    final String suiteName;
+	protected final TestSuite suite;
+	protected final int suiteID;
+	protected final String suiteName;
 
     // cached content of this suite
     private List<TLTestSuite> childSuites = null;
     private List<TLTestCase> childTestcases = null;
 
-    TLTestSuite(TestLink tl, TLTestProject project, TLTestSuite parent, TestSuite suite) {
+    protected TLTestSuite(TestLink tl, TLTestProject project, TLTestSuite parent, TestSuite suite) {
         this.tl = tl;
         this.project = project;
         this.parent = parent;

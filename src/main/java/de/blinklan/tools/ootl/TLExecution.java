@@ -11,14 +11,14 @@ import br.eti.kinoshita.testlinkjavaapi.model.Execution;
  *
  */
 public class TLExecution {
-    final TestLink tl;
+	protected final TestLink tl;
     
-    final TLBuild build;
-    final TLTestCase testcase;
+    protected final TLBuild build;
+    protected final TLTestCase testcase;
     
-    final Execution execution;
+    protected final Execution execution;
     
-    TLExecution(TestLink tl, TLBuild build, TLTestCase testcase, Execution execution) {
+    protected TLExecution(TestLink tl, TLBuild build, TLTestCase testcase, Execution execution) {
         this.tl = tl;
         this.build = build;
         this.testcase = testcase;

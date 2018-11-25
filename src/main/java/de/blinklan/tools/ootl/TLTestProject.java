@@ -27,17 +27,17 @@ public class TLTestProject {
 
 	private static final Log log = LogFactory.getLog(TLTestProject.class);
 
-	final TestLink tl;
+	protected final TestLink tl;
 
-	final int projectID;
-	final String projectName;
+	protected final int projectID;
+	protected final String projectName;
 
 	// cached first level test suites and builds
 	private List<TLTestSuite> cachedFirstLevelTestSuites = null;
 	private Map<List<String>, TLTestSuite> cachedTestSuitePaths = new HashMap<>();
 	private Map<String, TLBuild> cachedBuilds = new HashMap<>();
 
-	TLTestProject(TestLink tl, TestProject project) {
+	protected TLTestProject(TestLink tl, TestProject project) {
 		this.tl = tl;
 		this.projectID = project.getId();
 		this.projectName = project.getName();

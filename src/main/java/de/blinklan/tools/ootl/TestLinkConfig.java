@@ -8,13 +8,13 @@ package de.blinklan.tools.ootl;
  */
 public class TestLinkConfig {
 
-    final boolean createTestCase;
-    final boolean updateTestCase;
-    final boolean executeTestCase;
+	protected final boolean createTestCase;
+	protected final boolean updateTestCase;
+	protected final boolean executeTestCase;
 
-    final boolean createTestSuite;
+	protected final boolean createTestSuite;
 
-    final boolean createBuild;
+	protected final boolean createBuild;
 
     public static final TestLinkConfig NO_PERMISSIONS = new TestLinkConfig();
     public static final TestLinkConfig ALL_PERMISSIONS = new TestLinkConfig(true, true, true, true, true);

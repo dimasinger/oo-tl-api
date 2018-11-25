@@ -32,10 +32,10 @@ public class TestLink {
 
     private static final Log log = LogFactory.getLog(TestLink.class);
     
-    String username;
+    protected String username;
 
-    TestLinkAPI api;
-    TestLinkConfig config;
+    protected TestLinkAPI api;
+    protected TestLinkConfig config;
 
     // cached test projects
     private Map<String, TLTestProject> projects = new HashMap<>();

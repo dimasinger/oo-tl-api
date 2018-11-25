@@ -20,17 +20,17 @@ public class TLBuild {
 
 	private static final Log log = LogFactory.getLog(TLBuild.class);
 
-	final TestLink tl;
+	protected final TestLink tl;
 
-	final TLTestProject project;
+	protected final TLTestProject project;
 
-	final int planID;
-	final String planName;
+	protected final int planID;
+	protected final String planName;
 
-	final int buildID;
-	final String buildName;
+	protected final int buildID;
+	protected final String buildName;
 
-	TLBuild(TestLink tl, TLTestProject project, TestPlan plan, Build build) {
+	protected TLBuild(TestLink tl, TLTestProject project, TestPlan plan, Build build) {
 		this.tl = tl;
 		this.project = project;
 		this.planID = plan.getId();
