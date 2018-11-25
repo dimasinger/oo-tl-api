@@ -1,7 +1,8 @@
 package de.blinklan.tools.ootl;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.util.List;
 
@@ -11,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import br.eti.kinoshita.testlinkjavaapi.TestLinkAPI;
+import de.blinklan.tools.ootl.util.EmptyOptionalError;
 import de.blinklan.tools.ootl.util.TJAUtil;
 
 @ExtendWith(MockitoExtension.class)
@@ -21,11 +23,11 @@ class TLTestProjectTest {
 	
 	@Test
 	void testBasicSuiteNavigation() {
-		when(api.getTestProjectByName(anyString())).thenReturn(TJAUtil.getTestProject(1, "project", ""));
+		TJAUtil.mockBasicProject(api);
 		TJAUtil.mockSuites(api, 1, "basic");
 		
 		TestLink testlink = new TestLink(TestLinkConfig.NO_PERMISSIONS, api, "tester");
-		TLTestProject project = testlink.getTestProject("project");
+		TLTestProject project = testlink.getTestProject("project").orElseThrow(EmptyOptionalError::new);
 		
 		List<TLTestSuite> suites = project.getFirstLevelTestSuites();
 		assertThat(suites.size()).isEqualTo(2);
@@ -43,11 +45,11 @@ class TLTestProjectTest {
 	
 	@Test
 	void testSuitePathResolution() {
-		when(api.getTestProjectByName(anyString())).thenReturn(TJAUtil.getTestProject(1, "project", ""));
+		TJAUtil.mockBasicProject(api);
 		TJAUtil.mockSuites(api, 1, "deep");
 		
 		TestLink testlink = new TestLink(TestLinkConfig.NO_PERMISSIONS, api, "tester");
-		TLTestProject project = testlink.getTestProject("project");
+		TLTestProject project = testlink.getTestProject("project").get();
 		
 		TLTestSuite firstLevel = project.getTestSuiteByPath("A");
 		assertThat(firstLevel.getName()).isEqualTo("A");
@@ -60,4 +62,45 @@ class TLTestProjectTest {
 		assertThat(deep.getParent().getName()).isEqualTo("Superchild");
 	}
 
+	@Test
+	void testSuiteCaching() {
+		TJAUtil.mockBasicProject(api);
+		TJAUtil.mockSuites(api, 1, "deep");
+		
+		TestLink testlink = new TestLink(TestLinkConfig.NO_PERMISSIONS, api, "tester");
+		TLTestProject project = testlink.getTestProject("project").get();
+		
+		project.getTestSuiteByPath("A/Kid A");
+		verify(api, times(1)).getFirstLevelTestSuitesForTestProject(anyInt());
+		verify(api, times(1)).getTestSuitesForTestSuite(anyInt());
+		
+		project.getTestSuiteByPath("C/Child 1/Superchild/Interesting");
+		verify(api, times(1)).getFirstLevelTestSuitesForTestProject(anyInt());
+		verify(api, times(4)).getTestSuitesForTestSuite(anyInt());
+		
+		project.getTestSuiteByPath("C/Child 1/Superchild/Names/Very");
+		verify(api, times(1)).getFirstLevelTestSuitesForTestProject(anyInt());
+		verify(api, times(5)).getTestSuitesForTestSuite(anyInt());
+		
+		project.getTestSuiteByPath("C/Child 3");
+		verify(api, times(1)).getFirstLevelTestSuitesForTestProject(anyInt());
+		verify(api, times(5)).getTestSuitesForTestSuite(anyInt());
+		
+		project.getFirstLevelTestSuite("A").getTestSuite("Kid C");
+		verify(api, times(1)).getFirstLevelTestSuitesForTestProject(anyInt());
+		verify(api, times(5)).getTestSuitesForTestSuite(anyInt());
+	}
+	
+	@Test
+	void testGetBuildBasic() {
+		TJAUtil.mockBasicProject(api);
+		TJAUtil.mockBasicBuild(api);
+		
+		TestLink testlink = new TestLink(TestLinkConfig.NO_PERMISSIONS, api, "tester");
+		TLTestProject project = testlink.getTestProject("project").get();
+		
+		TLBuild build = project.getOrCreateBuild("plan", "build").orElseThrow(EmptyOptionalError::new);
+		assertThat(build.getPlanName()).isEqualTo("plan");
+		assertThat(build.getBuildName()).isEqualTo("build");
+	}
 }

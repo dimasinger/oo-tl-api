@@ -3,6 +3,7 @@ package de.blinklan.tools.ootl;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -66,7 +67,7 @@ public class TestLink {
     /**
      * Creates a handle to a test project, through which all API calls are then made
      */
-    public TLTestProject getTestProject(String testProjectName) {
-        return projects.computeIfAbsent(testProjectName, this::loadTestProject);
+    public Optional<TLTestProject> getTestProject(String testProjectName) {
+        return Optional.ofNullable(projects.computeIfAbsent(testProjectName, this::loadTestProject));
     }
 }

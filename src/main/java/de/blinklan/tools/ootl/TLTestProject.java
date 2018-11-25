@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -89,10 +90,10 @@ public class TLTestProject {
      * @param buildName
      *        the name of the build
      */
-    public TLBuild getBuild(String testPlanName, String buildName) {
+    public Optional<TLBuild> getOrCreateBuild(String testPlanName, String buildName) {
         String key = testPlanName + ":" + buildName;
         if (cachedBuilds.containsKey(key))
-            return cachedBuilds.get(key);
+            return Optional.of(cachedBuilds.get(key));
 
         String logBuild = "'" + buildName + "' in test plan '" + testPlanName + "'";
         log.debug("Caching build " + logBuild);
@@ -107,16 +108,16 @@ public class TLTestProject {
                     build = tl.api.createBuild(plan.getId(), buildName, buildName);
                 } catch (TestLinkAPIException e) {
                     log.error("Failed to create build " + logBuild, e);
-                    return null;
+                    return Optional.empty();
                 }
             } else {
                 log.error("No such build: " + logBuild);
-                return null;
+                return Optional.empty();
             }
         }
         TLBuild b = new TLBuild(tl, this, plan, build);
         cachedBuilds.put(key, b);
-        return b;
+        return Optional.of(b);
     }
 
     /**
