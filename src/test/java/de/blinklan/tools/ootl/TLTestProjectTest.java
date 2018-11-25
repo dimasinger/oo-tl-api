@@ -32,7 +32,7 @@ class TLTestProjectTest {
 		List<TLTestSuite> suites = project.getFirstLevelTestSuites();
 		assertThat(suites.size()).isEqualTo(2);
 		
-		TLTestSuite parent = project.getFirstLevelTestSuite("Parent");
+		TLTestSuite parent = project.getFirstLevelTestSuite("Parent").orElseThrow(EmptyOptionalError::new);
 		assertThat(parent.getName()).isEqualTo("Parent");
 		assertThat(parent.getID()).isEqualTo(2);
 		assertThat(parent.getParent()).isNull();
@@ -51,12 +51,12 @@ class TLTestProjectTest {
 		TestLink testlink = new TestLink(TestLinkConfig.NO_PERMISSIONS, api, "tester");
 		TLTestProject project = testlink.getTestProject("project").get();
 		
-		TLTestSuite firstLevel = project.getTestSuiteByPath("A");
+		TLTestSuite firstLevel = project.getTestSuiteByPath("A").orElseThrow(EmptyOptionalError::new);
 		assertThat(firstLevel.getName()).isEqualTo("A");
 		assertThat(firstLevel.getID()).isEqualTo(1);
 		assertThat(firstLevel.getParent()).isNull();
 		
-		TLTestSuite deep = project.getTestSuiteByPath("C/Child 1/Superchild/Test");
+		TLTestSuite deep = project.getTestSuiteByPath("C/Child 1/Superchild/Test").orElseThrow(EmptyOptionalError::new);
 		assertThat(deep.getName()).isEqualTo("Test");
 		assertThat(deep.getID()).isEqualTo(17);
 		assertThat(deep.getParent().getName()).isEqualTo("Superchild");
@@ -86,7 +86,7 @@ class TLTestProjectTest {
 		verify(api, times(1)).getFirstLevelTestSuitesForTestProject(anyInt());
 		verify(api, times(5)).getTestSuitesForTestSuite(anyInt());
 		
-		project.getFirstLevelTestSuite("A").getTestSuite("Kid C");
+		project.getFirstLevelTestSuite("A").orElseThrow(EmptyOptionalError::new).getTestSuite("Kid C");
 		verify(api, times(1)).getFirstLevelTestSuitesForTestProject(anyInt());
 		verify(api, times(5)).getTestSuitesForTestSuite(anyInt());
 	}

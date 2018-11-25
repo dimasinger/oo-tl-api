@@ -164,7 +164,7 @@ public class TLTestSuite {
         if (childTestcases == null) {
             log.debug("Caching child test cases of " + suiteName);
             childTestcases = new ArrayList<>();
-            TestCase[] cases = tl.api.getTestCasesForTestSuite(suiteID, false, TestCaseDetails.FULL);
+            TestCase[] cases = tl.api.getTestCasesForTestSuite(suiteID, true, TestCaseDetails.FULL);
             Arrays.stream(cases).map(tc -> new TLTestCase(tl, project, this, tc)).forEach(childTestcases::add);
         }
         return Collections.unmodifiableList(childTestcases);
