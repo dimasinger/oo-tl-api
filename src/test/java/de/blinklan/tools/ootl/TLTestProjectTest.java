@@ -99,7 +99,7 @@ class TLTestProjectTest {
 		TestLink testlink = new TestLink(TestLinkConfig.NO_PERMISSIONS, api, "tester");
 		TLTestProject project = testlink.getTestProject("project").get();
 		
-		TLBuild build = project.getOrCreateBuild("plan", "build").orElseThrow(EmptyOptionalError::new);
+		TLBuild build = project.getBuild("plan", "build").orElseThrow(EmptyOptionalError::new);
 		assertThat(build.getPlanName()).isEqualTo("plan");
 		assertThat(build.getBuildName()).isEqualTo("build");
 	}

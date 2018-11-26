@@ -16,7 +16,8 @@ import br.eti.kinoshita.testlinkjavaapi.model.TestPlan;
 import br.eti.kinoshita.testlinkjavaapi.model.TestProject;
 import br.eti.kinoshita.testlinkjavaapi.model.TestSuite;
 import br.eti.kinoshita.testlinkjavaapi.util.TestLinkAPIException;
-import de.blinklan.tools.ootl.exception.NoSuchTestSuiteException;
+import de.blinklan.tools.ootl.exception.MissingPermissionException;
+import de.blinklan.tools.ootl.exception.TestLinkException;
 
 /**
  * Wraps a TestProject and related API calls
@@ -35,8 +36,8 @@ public class TLTestProject {
 
 	// cached first level test suites and builds
 	private List<TLTestSuite> cachedFirstLevelTestSuites = null;
-	private Map<List<String>, TLTestSuite> cachedTestSuitePaths = new HashMap<>();
-	private Map<String, TLBuild> cachedBuilds = new HashMap<>();
+	private Map<List<String>, Optional<TLTestSuite>> cachedTestSuitePaths = new HashMap<>();
+	private Map<String, Optional<TLBuild>> cachedBuilds = new HashMap<>();
 
 	protected TLTestProject(TestLink tl, TestProject project) {
 		this.tl = tl;
@@ -44,20 +45,18 @@ public class TLTestProject {
 		this.projectName = project.getName();
 	}
 
-	private TLTestSuite resolveTestSuiteByPath(List<String> testSuitePath) {
+	private Optional<TLTestSuite> resolveTestSuiteByPath(List<String> testSuitePath) {
 		String logPath = "'" + String.join("/", testSuitePath) + "'";
 		log.debug("Caching test suite path " + logPath);
 
 		if(testSuitePath.isEmpty()) {
-			log.error("Can not resolve test suite path: path empty");
-			return null;
+			log.warn("Can not resolve test suite path: path empty");
+			return Optional.empty();
 		}
-		TLTestSuite current = getFirstLevelTestSuite(testSuitePath.get(0)).orElseThrow(
-				() -> new NoSuchTestSuiteException("No such top level test suite: " + testSuitePath.get(0)));
+		Optional<TLTestSuite> current = getFirstLevelTestSuite(testSuitePath.get(0));
 		for(int i = 1; i < testSuitePath.size(); ++i) {
-			String suiteName = testSuitePath.get(i);
-			current = current.getOrCreateTestSuite(suiteName)
-					.orElseThrow(() -> new NoSuchTestSuiteException("No such  test suite: " + suiteName));
+			String path = testSuitePath.get(i);
+			current = current.flatMap(c -> c.getTestSuite(path));
 		}
 		return current;
 	}
@@ -79,40 +78,51 @@ public class TLTestProject {
 	 */
 
 	/**
+	 * Creates a build in this test project
+	 * 
+	 * @param testPlanName
+	 *            the name of the test plan the build will be created in
+	 * @param buildName
+	 *            the name of the new build
+	 * @return the created build
+	 * @throws MissingPermissionException
+	 *             if missing the permission to create builds
+	 * @throws TestLinkException
+	 *             if the build could not be created
+	 */
+	public TLBuild createBuild(String testPlanName, String buildName) {
+		String key = testPlanName + ":" + buildName;
+		if(tl.config.createBuild) {
+			log.info("Creating build " + key);
+			try {
+				TestPlan plan = tl.api.getTestPlanByName(testPlanName, projectName);
+				return new TLBuild(tl, this, plan, tl.api.createBuild(plan.getId(), buildName, buildName));
+			} catch(TestLinkAPIException e) {
+				throw new TestLinkException("Failed to create build " + key, e);
+			}
+		} else throw new MissingPermissionException("Creating builds not permitted");
+	}
+
+	/**
 	 * Retrieves a build of this test project by name.
 	 * 
 	 * @param testPlanName
 	 *            the name of the test plan the build is in
 	 * @param buildName
 	 *            the name of the build
+	 * @return An {@code Optional} containing the build if it exists
 	 */
-	public Optional<TLBuild> getOrCreateBuild(String testPlanName, String buildName) {
+	public Optional<TLBuild> getBuild(String testPlanName, String buildName) {
 		String key = testPlanName + ":" + buildName;
-		if(cachedBuilds.containsKey(key)) return Optional.of(cachedBuilds.get(key));
+		if(cachedBuilds.containsKey(key)) return cachedBuilds.get(key);
 
-		String logBuild = "'" + buildName + "' in test plan '" + testPlanName + "'";
-		log.debug("Caching build " + logBuild);
-
+		log.debug("Caching build " + key);
 		TestPlan plan = tl.api.getTestPlanByName(testPlanName, projectName);
 		Build[] builds = tl.api.getBuildsForTestPlan(plan.getId());
-		Build build = Arrays.stream(builds).filter(b -> b.getName().equals(buildName)).findAny().orElse(null);
-		if(build == null) {
-			if(tl.config.createBuild) {
-				log.info("Creating build " + logBuild);
-				try {
-					build = tl.api.createBuild(plan.getId(), buildName, buildName);
-				} catch(TestLinkAPIException e) {
-					log.error("Failed to create build " + logBuild, e);
-					return Optional.empty();
-				}
-			} else {
-				log.error("No such build: " + logBuild);
-				return Optional.empty();
-			}
-		}
-		TLBuild b = new TLBuild(tl, this, plan, build);
-		cachedBuilds.put(key, b);
-		return Optional.of(b);
+		Optional<TLBuild> build = Arrays.stream(builds).filter(b -> b.getName().equals(buildName)).findAny()
+				.map(b -> new TLBuild(tl, this, plan, b));
+		cachedBuilds.put(key, build);
+		return build;
 	}
 
 	/**
@@ -135,7 +145,7 @@ public class TLTestProject {
 	 * 
 	 * @param testSuiteName
 	 *            the name of the test suite
-	 * @return the test suite if it exists, null otherwise
+	 * @return An {@code Optional} containing the suite if it exists
 	 */
 	public Optional<TLTestSuite> getFirstLevelTestSuite(String testSuiteName) {
 		return getFirstLevelTestSuites().stream().filter(s -> s.getName().equals(testSuiteName)).findAny();
@@ -146,16 +156,27 @@ public class TLTestProject {
 	 * hierarchy.<br>
 	 * The path is passed already split in form of a {@code List<String>}, with the
 	 * name of the first level test suite as the first element, the name of one of
-	 * its child as the second and so on.
+	 * its children as the second and so on.
 	 * 
 	 * @param testSuitePath
 	 *            the path to the test suite
-	 * @return the test suite if it exists, null otherwise
+	 * @return An {@code Optional} containing the suite if the path exists
 	 */
 	public Optional<TLTestSuite> getTestSuiteByPath(List<String> testSuitePath) {
-		return Optional.ofNullable(cachedTestSuitePaths.computeIfAbsent(testSuitePath, this::resolveTestSuiteByPath));
+		return cachedTestSuitePaths.computeIfAbsent(testSuitePath, this::resolveTestSuiteByPath);
 	}
 
+	/**
+	 * Retrieves a test suite specified by its path through the test suite
+	 * hierarchy.<br>
+	 * The path is passed in form of a {@code String}, which holds the path through
+	 * the test suite hierarchy. Forward slashes and backslashes are both accepted
+	 * as a path separator.
+	 * 
+	 * @param testSuitePath
+	 *            the path to the test suite
+	 * @return An {@code Optional} containing the suite if the path exists
+	 */
 	public Optional<TLTestSuite> getTestSuiteByPath(String testSuitePath) {
 		return getTestSuiteByPath(Arrays.asList(testSuitePath.split("[/\\\\]")));
 	}
