@@ -38,7 +38,7 @@ public class TestLink {
     protected TestLinkConfig config;
 
     // cached test projects
-    private Map<String, TLTestProject> projects = new HashMap<>();
+    private Map<String, Optional<TLTestProject>> projects = new HashMap<>();
     
     public TestLink(TestLinkConfig config, TestLinkAPI api, String username) {
     	this.username = username;
@@ -54,13 +54,13 @@ public class TestLink {
      * API calls
      */
 
-    private TLTestProject loadTestProject(String testProjectName) {
+    private Optional<TLTestProject> loadTestProject(String testProjectName) {
         try {
             TestProject project = api.getTestProjectByName(testProjectName);
-            return new TLTestProject(this, project);
+            return Optional.of(new TLTestProject(this, project));
         } catch (TestLinkAPIException e) {
-            log.error("No such test project: " + testProjectName, e);
-            return null;
+            log.debug("No such test project: " + testProjectName, e);
+            return Optional.empty();
         }
     }
 
@@ -68,6 +68,6 @@ public class TestLink {
      * Creates a handle to a test project, through which all API calls are then made
      */
     public Optional<TLTestProject> getTestProject(String testProjectName) {
-        return Optional.ofNullable(projects.computeIfAbsent(testProjectName, this::loadTestProject));
+        return projects.computeIfAbsent(testProjectName, this::loadTestProject);
     }
 }

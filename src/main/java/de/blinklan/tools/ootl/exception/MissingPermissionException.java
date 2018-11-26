@@ -7,11 +7,9 @@ package de.blinklan.tools.ootl.exception;
  * @author dimasinger
  *
  */
-public class MissingPermissionException extends RuntimeException {
+public class MissingPermissionException extends TestLinkException {
 
 	private static final long serialVersionUID = -1825231319536970144L;
-
-	public MissingPermissionException() {}
 
 	public MissingPermissionException(String message) {
 		super(message);
