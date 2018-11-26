@@ -11,14 +11,8 @@ public class TestLinkException extends RuntimeException {
 
 	private static final long serialVersionUID = -4411069280205607762L;
 
-	public TestLinkException() {}
-
 	public TestLinkException(String message) {
 		super(message);
-	}
-
-	public TestLinkException(Throwable cause) {
-		super(cause);
 	}
 
 	public TestLinkException(String message, Throwable cause) {

@@ -28,6 +28,7 @@ import de.blinklan.tools.ootl.TLTestProject;
 import de.blinklan.tools.ootl.TLTestSuite;
 import de.blinklan.tools.ootl.TestLink;
 import de.blinklan.tools.ootl.TestLinkConfig;
+import de.blinklan.tools.ootl.exception.FailedCreationException;
 import de.blinklan.tools.ootl.exception.MissingPermissionException;
 import de.blinklan.tools.ootl.structure.TLTestResult;
 import de.blinklan.tools.ootl.test.util.EmptyOptionalError;
@@ -39,6 +40,7 @@ import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionType;
 import br.eti.kinoshita.testlinkjavaapi.constants.TestCaseDetails;
 import br.eti.kinoshita.testlinkjavaapi.constants.TestCaseStatus;
 import br.eti.kinoshita.testlinkjavaapi.constants.TestImportance;
+import br.eti.kinoshita.testlinkjavaapi.util.TestLinkAPIException;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -112,6 +114,17 @@ public class TLTestSuiteTest {
 	}
 
 	@Test
+	void testCreateTestCaseFailure() {
+		TLTestSuite suite = initTestSuiteWithTestCases("basic", new TestLinkConfig(true, false, false, false, false));
+		when(api.createTestCase("case", 1, 1, "tester", "", Collections.emptyList(), "", TestCaseStatus.FINAL,
+				TestImportance.MEDIUM, ExecutionType.AUTOMATED, 0, 0, true, ActionOnDuplicate.BLOCK)).thenThrow(
+						TestLinkAPIException.class);
+
+		assertThatThrownBy(() -> suite.createTestCase("case", "", new TLTestResult())).isInstanceOf(
+				FailedCreationException.class);
+	}
+
+	@Test
 	void testCreateTestSuiteBasic() {
 		TLTestSuite suite = initTestSuiteWithTestCases("basic", new TestLinkConfig(false, false, false, true, false));
 		when(api.createTestSuite(eq(1), eq("new suite"), eq(""), eq(1), anyInt(), anyBoolean(), any(
@@ -132,5 +145,14 @@ public class TLTestSuiteTest {
 		assertThatThrownBy(() -> suite.createTestSuite("new suite")).isInstanceOf(MissingPermissionException.class);
 		verify(api, never()).createTestSuite(anyInt(), anyString(), anyString(), anyInt(), anyInt(), anyBoolean(), any(
 				ActionOnDuplicate.class));
+	}
+	
+	@Test
+	void testCreateTestSuiteFailure() {
+		TLTestSuite suite = initTestSuiteWithTestCases("basic", new TestLinkConfig(false, false, false, true, false));
+		when(api.createTestSuite(eq(1), eq("new suite"), eq(""), eq(1), anyInt(), anyBoolean(), any(
+				ActionOnDuplicate.class))).thenThrow(TestLinkAPIException.class);
+
+		assertThatThrownBy(() -> suite.createTestSuite("new suite")).isInstanceOf(FailedCreationException.class);
 	}
 }

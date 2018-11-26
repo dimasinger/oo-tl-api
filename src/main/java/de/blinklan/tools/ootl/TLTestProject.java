@@ -11,13 +11,15 @@ import java.util.Optional;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import de.blinklan.tools.ootl.exception.FailedCreationException;
+import de.blinklan.tools.ootl.exception.MissingPermissionException;
+import de.blinklan.tools.ootl.exception.TestLinkException;
+
 import br.eti.kinoshita.testlinkjavaapi.model.Build;
 import br.eti.kinoshita.testlinkjavaapi.model.TestPlan;
 import br.eti.kinoshita.testlinkjavaapi.model.TestProject;
 import br.eti.kinoshita.testlinkjavaapi.model.TestSuite;
 import br.eti.kinoshita.testlinkjavaapi.util.TestLinkAPIException;
-import de.blinklan.tools.ootl.exception.MissingPermissionException;
-import de.blinklan.tools.ootl.exception.TestLinkException;
 
 /**
  * Wraps a TestProject and related API calls
@@ -93,12 +95,12 @@ public class TLTestProject {
 	public TLBuild createBuild(String testPlanName, String buildName) {
 		String key = testPlanName + ":" + buildName;
 		if(tl.config.createBuild) {
-			log.info("Creating build " + key);
+			log.debug("Creating build " + key);
 			try {
 				TestPlan plan = tl.api.getTestPlanByName(testPlanName, projectName);
 				return new TLBuild(tl, this, plan, tl.api.createBuild(plan.getId(), buildName, buildName));
 			} catch(TestLinkAPIException e) {
-				throw new TestLinkException("Failed to create build " + key, e);
+				throw new FailedCreationException("Failed to create build " + key, e);
 			}
 		} else throw new MissingPermissionException("Creating builds not permitted");
 	}
