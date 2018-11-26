@@ -5,6 +5,8 @@ import java.util.Optional;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import de.blinklan.tools.ootl.exception.TestLinkException;
+
 import br.eti.kinoshita.testlinkjavaapi.model.Build;
 import br.eti.kinoshita.testlinkjavaapi.model.Execution;
 import br.eti.kinoshita.testlinkjavaapi.model.TestPlan;
@@ -61,22 +63,22 @@ public class TLBuild {
 	 * @return Execution result if testcase executed in this build
 	 */
 	public Optional<TLExecution> getLastExecution(TLTestCase testcase) {
+		Execution execution;
 		try {
-			Execution execution = tl.api.getLastExecutionResult(planID, testcase.getID(), -1);
-			if(execution == null) {
-				log.debug("Test case '" + testcase.getName() + "' not executed in test plan '" + planName + "'");
-				return Optional.of(new TLExecution(tl, this, testcase, null));
-			}
-			if(execution.getBuildId() != buildID) {
-				log.debug("Test case '" + testcase.getName() + "' not executed in build '" + buildName + "'");
-				return Optional.of(new TLExecution(tl, this, testcase, null));
-			}
-			return Optional.of(new TLExecution(tl, this, testcase, execution));
+			execution = tl.api.getLastExecutionResult(planID, testcase.getID(), -1);
 		} catch(TestLinkAPIException e) {
-			log.error("Failed to retrieve last execution result of test case '" + testcase.getName()
+			throw new TestLinkException("Failed to retrieve last execution result of test case '" + testcase.getName()
 					+ "' in test plan '" + planName + "':", e);
 		}
-		return Optional.empty();
+		if(execution == null) {
+			log.debug("Test case '" + testcase.getName() + "' not executed in test plan '" + planName + "'");
+			return Optional.empty();
+		}
+		if(execution.getBuildId() != buildID) {
+			log.debug("Test case '" + testcase.getName() + "' not executed in build '" + buildName + "'");
+			return Optional.empty();
+		}
+		return Optional.of(new TLExecution(tl, this, testcase, execution));
 	}
 
 	/**

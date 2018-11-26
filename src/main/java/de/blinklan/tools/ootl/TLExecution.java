@@ -29,10 +29,6 @@ public class TLExecution {
      * Getters
      */
     
-    public boolean notExecuted() {
-        return execution == null;
-    }
-    
     public TLTestCase getTestcase() {
         return testcase;
     }

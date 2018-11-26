@@ -1,8 +1,8 @@
 package de.blinklan.tools.ootl.test.util;
 
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Deque;
 import java.util.List;
 import java.util.Scanner;
@@ -22,6 +23,7 @@ import br.eti.kinoshita.testlinkjavaapi.constants.TestCaseDetails;
 import br.eti.kinoshita.testlinkjavaapi.constants.TestCaseStatus;
 import br.eti.kinoshita.testlinkjavaapi.constants.TestImportance;
 import br.eti.kinoshita.testlinkjavaapi.model.Build;
+import br.eti.kinoshita.testlinkjavaapi.model.Execution;
 import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
 import br.eti.kinoshita.testlinkjavaapi.model.TestPlan;
 import br.eti.kinoshita.testlinkjavaapi.model.TestProject;
@@ -49,6 +51,10 @@ public class TJAUtil {
 
 	public static Build getBuild(int id, int testPlanId, String name) {
 		return new Build(id, testPlanId, name, "");
+	}
+	
+	public static Execution getExecution(int id, int planId, int buildId, ExecutionStatus status) {
+		return new Execution(id, buildId, 1, new Date(), status, 1, 1, 1, ExecutionType.AUTOMATED, "");
 	}
 
 	public static TestSuite getTestSuite(int id, int parentId, int projectId, String name) {
